@@ -1,0 +1,40 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import {ToastContainer} from 'react-toastify';
+
+export default function Signup() {
+  return (
+    <div className='container h-dvh w-dvw flex justify-center items-center'>
+      <form action="">
+        <h1>Signup</h1>
+        <div>
+          <label className='text-[20px]' htmlFor="name">Name</label>
+          <input 
+          type="text"
+           name="name"
+            autoFocus
+             placeholder='Enter your name' />
+        </div>
+        <div>
+          <label htmlFor="email">Email</label>
+          <input 
+          type="email"
+           name="email"
+            placeholder='Enter your email' />
+        </div>
+        <div>
+          <label htmlFor="password">Password</label>
+          <input 
+          type="password" 
+          name="password"
+           placeholder='Enter your password' />
+        </div>
+        <button type="submit">Signup</button>
+        <span>Already have an account ? 
+           <Link to="/login">Login</Link>
+        </span>
+      </form>
+      <ToastContainer/>
+    </div>
+  )
+}
