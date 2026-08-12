@@ -1,40 +1,146 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import {ToastContainer} from 'react-toastify';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import { handleError, handleSuccess } from '../utils';
+
 
 export default function Signup() {
+  const [signupInfo, setSignupInfo] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    const copySignupInfo = { ...signupInfo };
+    copySignupInfo[name] = value;
+    setSignupInfo(copySignupInfo);
+    console.log(copySignupInfo);
+  };
+  const navigate = useNavigate();
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    const { name, email, password } = signupInfo;
+    if(!name || !email || !password) {
+      return handleError('Please fill all the fields');
+    }
+    try {
+      const url = 'http://localhost:8080/auth/signup';
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(signupInfo),
+      });
+      const result = await response.json();
+      const { success, message, error } = result;
+      if (success) {
+        handleSuccess(message);
+        setTimeout(()=>{
+          navigate('/login');
+        }, 1000);
+      }else if (error) {
+        const details = error?.details[0].message;
+        handleError(details);
+      }else if (!success) {
+        handleError(message);
+      }
+
+    }
+    catch(error) {
+      return handleError(error.message);
+    }
+  };
   return (
-    <div className='container h-dvh w-dvw flex justify-center items-center'>
-      <form action="">
-        <h1>Signup</h1>
-        <div>
-          <label className='text-[20px]' htmlFor="name">Name</label>
-          <input 
-          type="text"
-           name="name"
-            autoFocus
-             placeholder='Enter your name' />
+    <div className="min-h-dvh w-full flex items-center justify-center bg-linear-to-br from-slate-900 via-indigo-950 to-slate-900 px-3 py-6 sm:px-4 sm:py-10 md:px-6">
+      <form
+        onSubmit={handleSubmit}
+        action=""
+        className="w-full max-w-[min(100%,28rem)] rounded-xl border border-white/10 bg-white/95 p-5 shadow-2xl shadow-indigo-950/40 backdrop-blur-sm sm:rounded-2xl sm:p-8 md:p-10"
+      >
+        <div className="mb-6 text-center sm:mb-8">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-indigo-600 sm:text-sm">
+            Get started
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl md:text-4xl">
+            Create account
+          </h1>
+          <p className="mt-2 text-xs text-slate-500 sm:text-sm">
+            Join us and start your journey today.
+          </p>
         </div>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input 
-          type="email"
-           name="email"
-            placeholder='Enter your email' />
+
+        <div className="space-y-4 sm:space-y-5">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-slate-700" htmlFor="name">
+              Full name
+            </label>
+            <input
+              onChange={handleChange}
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 sm:px-4 sm:py-3 sm:text-sm"
+              type="text"
+              name="name"
+              id="name"
+              autoFocus
+              placeholder="Enter your full name"
+              value={signupInfo.name}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-slate-700" htmlFor="email">
+              Email address
+            </label>
+            <input
+              onChange={handleChange}
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 sm:px-4 sm:py-3 sm:text-sm"
+              type="email"
+              name="email"
+              id="email"
+              placeholder="you@example.com"
+              value={signupInfo.email}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-slate-700" htmlFor="password">
+              Password
+            </label>
+            <input
+              onChange={handleChange}
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 sm:px-4 sm:py-3 sm:text-sm"
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Create a strong password"
+              value={signupInfo.password}
+            />
+          </div>
         </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input 
-          type="password" 
-          name="password"
-           placeholder='Enter your password' />
-        </div>
-        <button type="submit">Signup</button>
-        <span>Already have an account ? 
-           <Link to="/login">Login</Link>
-        </span>
+
+        <button
+          type="submit"
+          className="mt-6 w-full rounded-lg bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:scale-[0.98] sm:mt-8"
+        >
+          Sign up
+        </button>
+
+        <p className="mt-5 text-center text-xs text-slate-500 sm:mt-6 sm:text-sm">
+          Already have an account?{' '}
+          <Link
+            to="/login"
+            className="font-semibold text-indigo-600 transition hover:text-indigo-500"
+          >
+            Sign in
+          </Link>
+        </p>
       </form>
-      <ToastContainer/>
+      <ToastContainer
+        position="bottom-center"
+        className="w-[calc(100vw-1.5rem)]! sm:w-auto!"
+        toastClassName="!text-sm"
+      />
     </div>
-  )
+  );
 }

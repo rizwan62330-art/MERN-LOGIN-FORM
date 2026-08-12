@@ -41,7 +41,7 @@ const login = async (req, res) => {
             return res.status(403)
                 .json({ message: errorMsg, success: false });
         }
-        const jwtToke = jwt.sign(
+        const jwtToken = jwt.sign(
             { email: user.email, _id: user._id },
             process.env.JWT_SECRET,
             { expiresIn: '12h' }
@@ -51,7 +51,7 @@ const login = async (req, res) => {
             .json({
                 message: "Login Successfully",
                 success: true,
-                jwtToke,
+                jwtToken,
                 email,
                 name: user.name
             })
