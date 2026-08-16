@@ -18,6 +18,7 @@ export default function Signup() {
     console.log(copySignupInfo);
   };
   const navigate = useNavigate();
+  
   const handleSubmit = async(e) => {
     e.preventDefault();
     const { name, email, password } = signupInfo;
